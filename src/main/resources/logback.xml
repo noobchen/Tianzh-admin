@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration scan="true">
+
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d [%thread] %-5level %logger{36} %line - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/log/logFile.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/log/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36} %line - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="cacheContainerObserver" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/log/cacheContainerObserver.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>/log/cacheContainerObserver.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36} %line - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="initSystem" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/log/initSystem.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>/log/initSystem.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36} %line - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="productAnalysisJob" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/log/productAnalysisJob.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>/log/productAnalysisJob.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36} %line - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="exception" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/log/exception.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>/log/exception.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36} %line - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="java.sql" level="debug" additivity="true"/>
+    <logger name="org.mybatis" level="debug" additivity="true"/>
+
+    <logger name="cacheContainerObserver" level="info" additivity="false">
+        <appender-ref ref="cacheContainerObserver"/>
+    </logger>
+
+    <logger name="initSystem" level="info" additivity="false">
+        <appender-ref ref="initSystem"/>
+    </logger>
+
+    <logger name="productAnalysisJob" level="info" additivity="false">
+        <appender-ref ref="productAnalysisJob"/>
+    </logger>
+
+    <logger name="exception" level="info" additivity="false">
+        <appender-ref ref="exception"/>
+    </logger>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

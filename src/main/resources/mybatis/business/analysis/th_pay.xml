@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="th_pay">
+
+    <resultMap id="thPay" type="com.tianzh.admin.business.analysis.model.ThPay">
+        <id property="id" column="id"/>
+        <result property="name" column="th_name"/>
+        <result property="weight" column="weight"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <insert id="addThPay" parameterType="com.tianzh.admin.business.analysis.model.ThPay" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+        tbl_th_pay(
+        th_name,
+        weight,
+        status,
+        create_time
+        )
+        VALUES(
+        #{name,jdbcType=VARCHAR},
+        #{weight,jdbcType=INTEGER},
+        #{status,jdbcType=INTEGER},
+        #{createTime}
+        )
+    </insert>
+
+    <update id="editThPay" parameterType="com.tianzh.admin.business.analysis.model.ThPay">
+        UPDATE
+        tbl_th_pay
+        SET
+        th_name = #{name,jdbcType=VARCHAR},
+        weight = #{weight,jdbcType=INTEGER},
+        status = #{status,jdbcType=INTEGER}
+        WHERE
+        id = #{id,jdbcType=INTEGER}
+
+    </update>
+
+    <select id="queryThPay" resultMap="thPay">
+        SELECT
+        id,
+        th_name,
+        weight,
+        status,
+        create_time
+        FROM
+        tbl_th_pay
+        ORDER  BY
+        id DESC
+
+    </select>
+
+    <delete id="delThPay" parameterType="com.tianzh.admin.business.analysis.model.ThPay">
+        DELETE
+        FROM
+        tbl_th_pay
+        WHERE
+        id=#{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

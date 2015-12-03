@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="product_detial">
+    <resultMap id="detial" type="com.tianzh.admin.business.analysis.model.ProductDetial">
+        <id property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="thirdPartyKey" column="third_party_key"/>
+        <result property="thirdPartyAccount" column="third_party_account"/>
+        <result property="thirdPartyPwd" column="third_party_pwd"/>
+        <result property="keyType" column="key_type"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="feepoint" type="com.tianzh.admin.business.analysis.model.FeePoint">
+        <id property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="feePointId" column="feePoint_id"/>
+        <result property="feePointName" column="feePoint_name"/>
+        <result property="price" column="price"/>
+        <result property="feePointDesc" column="feePoint_desc"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="feepoint_letu" type="com.tianzh.admin.business.analysis.model.FeePoint">
+        <id property="id" column="feepoint_id"/>
+        <result property="letuPrice" column="price"/>
+        <result property="letuFeeDesc" column="feepoint_desc"/>
+        <result property="letuPayPointNum" column="pointnum"/>
+        <result property="letuSdkChannelId" column="sdk_channelId"/>
+        <result property="letuPayType" column="paytype"/>
+        <result property="letuGameType" column="gametype"/>
+        <result property="letuShowUIKey" column="show_UIKey"/>
+        <result property="letuMerchantKey" column="merchant_key"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="feepoint_yl" type="com.tianzh.admin.business.analysis.model.FeePoint">
+        <id property="id" column="feepoint_id"/>
+        <result property="yLPrice" column="price"/>
+        <result property="yLFeeDesc" column="feepoint_desc"/>
+        <result property="yLIsOnline" column="is_online"/>
+        <result property="yLGoodsId" column="goods_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="feepoint_zhang" type="com.tianzh.admin.business.analysis.model.FeePoint">
+        <id property="id" column="feepoint_id"/>
+        <result property="zhPrice" column="price"/>
+        <result property="zhFeeDesc" column="feepoint_desc"/>
+        <result property="zhangKey" column="zhang_key"/>
+        <result property="zhangPricePointId" column="zhang_priceid"/>
+        <result property="zhangAppVersion" column="app_version"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+
+    <select id="queryProductDetials" parameterType="java.util.HashMap" resultMap="detial">
+        SELECT
+        id,
+        product_id,
+        third_party_key,
+        third_party_account,
+        third_party_pwd,
+        key_type,
+        status,
+        create_time
+        FROM
+        tbl_product_detial
+        <where>
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+            <if test="null != keyType and keyType != 0">
+                AND key_type = #{keyType}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <update id="editProductDetial" parameterType="com.tianzh.admin.business.analysis.model.ProductDetial">
+        UPDATE
+        tbl_product_detial
+        SET
+        third_party_key =#{thirdPartyKey,jdbcType=VARCHAR},
+        third_party_account =#{thirdPartyAccount,jdbcType=VARCHAR},
+        third_party_pwd =#{thirdPartyPwd,jdbcType=VARCHAR},
+        key_type=#{keyType,jdbcType=INTEGER},
+        status=#{status,jdbcType=INTEGER},
+        update_time = NOW()
+        WHERE
+        id = #{id}
+    </update>
+
+    <delete id="delProductDetial" parameterType="com.tianzh.admin.business.analysis.model.ProductDetial">
+        DELETE
+        FROM
+        tbl_product_detial
+        WHERE
+        id = #{id}
+    </delete>
+
+    <insert id="addProductDetial" parameterType="com.tianzh.admin.business.analysis.model.ProductDetial"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+             tbl_product_detial(
+                product_id,
+                third_party_key,
+                third_party_account,
+                third_party_pwd,
+                key_type,
+                status,
+                create_time
+                )
+           VALUES(
+             #{productId,jdbcType=INTEGER},
+             #{thirdPartyKey,jdbcType=VARCHAR},
+             #{thirdPartyAccount,jdbcType=VARCHAR},
+             #{thirdPartyPwd,jdbcType=VARCHAR},
+             #{keyType,jdbcType=INTEGER},
+             #{status,jdbcType=INTEGER},
+             #{createTime}
+           )
+    </insert>
+
+
+    <insert id="addFeePointInfo" parameterType="com.tianzh.admin.business.analysis.model.FeePoint"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+        tbl_feepoint_info(
+        product_id,
+        product_name,
+        feePoint_id,
+        feePoint_name,
+        price,
+        feePoint_desc,
+        create_time
+
+        ) VALUES (
+        #{productId,jdbcType=INTEGER},
+        #{productName,jdbcType=VARCHAR},
+        #{feePointId,jdbcType=VARCHAR},
+        #{feePointName,jdbcType=VARCHAR},
+        #{price,jdbcType=INTEGER},
+        #{feePointDesc,jdbcType=VARCHAR},
+        #{createTime}
+        )
+        <selectKey keyProperty="id" resultType="java.lang.Integer">
+
+            SELECT LAST_INSERT_ID() AS id
+
+        </selectKey>
+    </insert>
+
+    <insert id="addFeePointZhang" parameterType="com.tianzh.admin.business.analysis.model.FeePoint"
+            useGeneratedKeys="false"
+            keyProperty="id">
+      INSERT INTO
+      tbl_feepoint_zhang(
+      feepoint_id,
+      price,
+      feepoint_desc,
+      zhang_key,
+      zhang_priceid,
+      app_version,
+      create_time
+      ) VALUES (
+              #{id,jdbcType=INTEGER},
+              #{zhPrice,jdbcType=VARCHAR},
+              #{zhFeeDesc,jdbcType=VARCHAR},
+                            #{zhangKey,jdbcType=VARCHAR},
+              #{zhangPricePointId,jdbcType=VARCHAR},
+              #{zhangAppVersion,jdbcType=VARCHAR},
+      #{createTime}
+      )
+    </insert>
+
+
+    <insert id="addFeePointLetu" parameterType="com.tianzh.admin.business.analysis.model.FeePoint"
+            useGeneratedKeys="false"
+            keyProperty="id">
+      INSERT INTO
+      tbl_feepoint_letu(
+      feepoint_id,
+      price,
+      feepoint_desc,
+      pointnum,
+      sdk_channelId,
+      paytype,
+      gametype,
+      show_UIKey,
+      merchant_key,
+      create_time
+      ) VALUES (
+      #{id,jdbcType=INTEGER},
+      #{letuPrice,jdbcType=VARCHAR},
+      #{letuFeeDesc,jdbcType=VARCHAR},
+            #{letuPayPointNum,jdbcType=INTEGER},
+      #{letuSdkChannelId,jdbcType=VARCHAR},
+      #{letuPayType,jdbcType=INTEGER},
+      #{letuGameType,jdbcType=INTEGER},
+      #{letuShowUIKey,jdbcType=VARCHAR},
+      #{letuMerchantKey,jdbcType=VARCHAR},
+      #{createTime}
+      )
+
+    </insert>
+
+
+    <insert id="addFeePointYL" parameterType="com.tianzh.admin.business.analysis.model.FeePoint"
+            useGeneratedKeys="false"
+            keyProperty="id">
+        INSERT INTO
+        tbl_feepoint_yl(
+        feepoint_id,
+        price,
+        feepoint_desc,
+        is_online,
+        goods_id,
+        create_time
+        ) VALUES (
+        #{id,jdbcType=INTEGER},
+        #{yLPrice,jdbcType=VARCHAR},
+        #{yLFeeDesc,jdbcType=VARCHAR},
+        #{yLIsOnline,jdbcType=INTEGER},
+        #{yLGoodsId,jdbcType=VARCHAR},
+        #{createTime}
+        )
+    </insert>
+
+    <select id="queryFeePointInfo" parameterType="java.util.HashMap" resultMap="feepoint">
+        SELECT
+        id,
+        feePoint_id,
+        feePoint_name,
+        price,
+        feePoint_desc,
+        create_time
+        FROM
+        tbl_feepoint_info
+        <where>
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+
+    <select id="queryFeePointLetu" parameterType="java.util.HashMap" resultMap="feepoint_letu">
+        SELECT
+        feepoint_id,
+        price,
+        feepoint_desc,
+        pointnum,
+        sdk_channelId,
+        paytype,
+        gametype,
+        show_UIKey,
+        merchant_key,
+        create_time
+        FROM
+        tbl_feepoint_letu
+        <where>
+            <if test="null != feepointId and feepointId != 0">
+                AND feepoint_id = #{feepointId}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="queryFeePointYL" parameterType="java.util.HashMap" resultMap="feepoint_yl">
+        SELECT
+        feepoint_id,
+        price,
+        feepoint_desc,
+        is_online,
+        goods_id,
+        create_time
+        FROM
+        tbl_feepoint_yl
+        <where>
+            <if test="null != feepointId and feepointId != 0">
+                AND feepoint_id = #{feepointId}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="queryFeePointZhang" parameterType="java.util.HashMap" resultMap="feepoint_zhang">
+        SELECT
+        feepoint_id,
+        price,
+        feepoint_desc,
+        zhang_key,
+        zhang_priceid,
+        app_version,
+        create_time
+        FROM
+        tbl_feepoint_zhang
+        <where>
+            <if test="null != feepointId and feepointId != 0">
+                AND feepoint_id = #{feepointId}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <update id="editFeePointInfo" parameterType="com.tianzh.admin.business.analysis.model.FeePoint">
+        UPDATE
+        tbl_feepoint_info
+        SET
+        feePoint_name = #{feePointName,jdbcType=VARCHAR},
+        price = #{price,jdbcType=INTEGER},
+        feePoint_desc = #{feePointDesc,jdbcType=VARCHAR},
+        update_time = NOW()
+        WHERE
+        id = #{id}
+    </update>
+
+    <update id="editFeePointLetu" parameterType="com.tianzh.admin.business.analysis.model.FeePoint">
+        UPDATE
+        tbl_feepoint_letu
+        SET
+        price = #{letuPrice,jdbcType=VARCHAR},
+        feepoint_desc = #{letuFeeDesc,jdbcType=VARCHAR},
+        pointnum = #{letuPayPointNum,jdbcType=INTEGER},
+        sdk_channelId = #{letuSdkChannelId,jdbcType=VARCHAR},
+        paytype = #{letuPayType,jdbcType=INTEGER},
+        gametype = #{letuGameType,jdbcType=INTEGER},
+        show_UIKey = #{letuShowUIKey,jdbcType=VARCHAR},
+        merchant_key = #{letuMerchantKey,jdbcType=VARCHAR},
+        update_time = NOW()
+        WHERE
+        feepoint_id = #{id}
+    </update>
+
+    <update id="editFeePointYL" parameterType="com.tianzh.admin.business.analysis.model.FeePoint">
+        UPDATE
+        tbl_feepoint_yl
+        SET
+        price = #{yLPrice,jdbcType=VARCHAR},
+        feepoint_desc = #{yLFeeDesc,jdbcType=VARCHAR},
+        is_online = #{yLIsOnline,jdbcType=INTEGER},
+        goods_id = #{yLGoodsId,jdbcType=VARCHAR},
+        update_time = NOW()
+        WHERE
+        feepoint_id = #{id}
+    </update>
+
+    <update id="editFeePointZhang" parameterType="com.tianzh.admin.business.analysis.model.FeePoint">
+        UPDATE
+        tbl_feepoint_zhang
+        SET
+        price = #{zhPrice,jdbcType=VARCHAR},
+        feepoint_desc = #{zhFeeDesc,jdbcType=VARCHAR},
+        zhang_key = #{zhangKey,jdbcType=VARCHAR},
+        zhang_priceid = #{zhangPricePointId,jdbcType=VARCHAR},
+        app_version = #{zhangAppVersion,jdbcType=VARCHAR},
+        update_time = NOW()
+        WHERE
+        feepoint_id = #{id}
+    </update>
+
+    <delete id="delFeePointInfo" parameterType="com.tianzh.admin.business.analysis.model.FeePoint">
+        DELETE
+        FROM
+        tbl_feepoint_info
+        WHERE
+        id = #{id}
+    </delete>
+
+    <delete id="delFeePointLetu" parameterType="com.tianzh.admin.business.analysis.model.FeePoint">
+        DELETE
+        FROM
+        tbl_feepoint_letu
+        WHERE
+        feepoint_id = #{id}
+    </delete>
+
+    <delete id="delFeePointYL" parameterType="com.tianzh.admin.business.analysis.model.FeePoint">
+        DELETE
+        FROM
+        tbl_feepoint_yl
+        WHERE
+        feepoint_id = #{id}
+    </delete>
+
+    <delete id="delFeePointZhang" parameterType="com.tianzh.admin.business.analysis.model.FeePoint">
+        DELETE
+        FROM
+        tbl_feepoint_zhang
+        WHERE
+        feepoint_id = #{id}
+    </delete>
+</mapper>

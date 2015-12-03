@@ -1,0 +1,101 @@
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+    <definition name="template" template="/WEB-INF/views/main.jsp">
+        <put-attribute name="navbar" value="/WEB-INF/views/navbar.jsp"/>
+        <!--<put-attribute name="subnav" value="/WEB-INF/views/subnav.jsp"/>-->
+        <put-attribute name="breadcrumb" value="/WEB-INF/views/breadcrumb.jsp"/>
+        <put-attribute name="content" value="/WEB-INF/views/content.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/views/body.jsp"/>
+        <!--<put-attribute name="footer" value="/WEB-INF/views/footer.jsp"/>-->
+    </definition>
+
+    <definition name="main" extends="template"
+                preparer="com.tianzh.admin.common.spring.mvc.tiles.TilesContentViewPreparer">
+        <put-attribute name="navbar" value="/WEB-INF/views/navbar.jsp"/>
+    </definition>
+
+    <definition name="resource" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/permission/resource.jsp"/>
+    </definition>
+
+    <definition name="role" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/permission/role.jsp"/>
+    </definition>
+
+    <definition name="operator" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/permission/operator.jsp"/>
+    </definition>
+
+    <definition name="personal" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/permission/personal.jsp"/>
+    </definition>
+
+    <definition name="login" template="/WEB-INF/views/login/login.jsp"/>
+    <definition name="error" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/error/error.jsp"/>
+    </definition>
+    <definition name="exception" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/error/exception.jsp"/>
+    </definition>
+
+    <!-- Business   Begin-->
+    <definition name="product" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/product.jsp"/>
+    </definition>
+
+    <definition name="thPay" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/thPay.jsp"/>
+    </definition>
+
+    <definition name="thPayProvince" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/thPayProvince.jsp"/>
+    </definition>
+
+    <definition name="thPayAdvantageProvince" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/thPayAdvantageProvince.jsp"/>
+    </definition>
+
+    <definition name="productDetial" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/productDetial.jsp"/>
+    </definition>
+
+    <definition name="productFeePoint" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/productFeePoint.jsp"/>
+    </definition>
+
+    <definition name="productIdentification" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/productIdentification.jsp"/>
+    </definition>
+
+    <definition name="productAnalysis4Admin" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/productAnalysis4Admin.jsp"/>
+    </definition>
+
+    <definition name="productAnalysis4Cooperation" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/productAnalysis4Cooperation.jsp"/>
+    </definition>
+
+    <definition name="thOrder" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/thOrder.jsp"/>
+    </definition>
+
+    <definition name="basicProAnalysis" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/basicProAnalysis.jsp"/>
+    </definition>
+
+    <definition name="chargeBasicAnalysis" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/chargeBasicAnalysis.jsp"/>
+    </definition>
+
+    <definition name="basicProvinceAnalysis" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/basicProvinceAnalysis.jsp"/>
+    </definition>
+
+    <definition name="allProvinceAnalysis" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/business/allProvinceAnalysis.jsp"/>
+    </definition>
+
+
+</tiles-definitions>

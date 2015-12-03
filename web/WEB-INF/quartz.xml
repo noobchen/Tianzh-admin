@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <bean id="productAnalysisTask"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 调用的类 -->
+        <property name="targetObject">
+            <ref bean="productAnalysisJob" />
+        </property>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod">
+            <value>schedule</value>
+        </property>
+    </bean>
+
+    <!-- 定义触发时间 -->
+    <bean id="productAnalysisTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="productAnalysisTask"/>
+        </property>
+        <!-- cron表达式 -->
+        <property name="cronExpression">
+            <!-- 每天凌晨1点执行-->
+            <value>0 0 1 * * ?</value>
+            <!-- 每分钟-->
+            <!--<value>0 0/1 * * * ?</value>-->
+        </property>
+    </bean>
+
+    <bean id="LeTuSyncTask"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 调用的类 -->
+        <property name="targetObject">
+            <ref bean="leTuSyncJob" />
+        </property>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod">
+            <value>sync</value>
+        </property>
+    </bean>
+
+    <!-- 定义触发时间 -->
+    <bean id="leTuSyncTaskTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="LeTuSyncTask"/>
+        </property>
+        <!-- cron表达式 -->
+        <property name="cronExpression">
+            <!-- 每天上午10点执行-->
+            <value>0 0 10 * * ?</value>
+            <!-- 每分钟-->
+            <!--<value>0 0/1 * * * ?</value>-->
+        </property>
+    </bean>
+
+    <bean id="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="productAnalysisTime"/>
+                <ref bean="leTuSyncTaskTime"/>
+            </list>
+        </property>
+    </bean>
+
+
+</beans>

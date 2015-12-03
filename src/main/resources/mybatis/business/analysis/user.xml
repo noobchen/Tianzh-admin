@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+
+    <select id="queryUseFullUsers" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT
+            COUNT(user_token) as userfull_users
+        FROM
+            tbl_useful_user
+        WHERE
+            status = 0
+            AND
+            app_id = #{app_id,jdbcType=VARCHAR}
+            AND
+            channel = #{channel,jdbcType=VARCHAR}
+            AND
+            create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+            AND
+            create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+    </select>
+</mapper>

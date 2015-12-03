@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="product">
+
+    <resultMap id="product" type="com.tianzh.admin.business.analysis.model.Product">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="appId" column="app_id"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+
+    <select id="queryProduct" parameterType="java.util.HashMap" resultMap="product">
+        SELECT
+            id,
+            name,
+            app_id,
+            status,
+            create_time
+        FROM
+            tbl_product_info
+        <where>
+            <if test="null != name and name != ''">
+                AND name LIKE CONCAT(CONCAT('%', #{name}),'%')
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="queryProduct4Cooperation" parameterType="java.util.HashMap" resultMap="product">
+        SELECT
+        a.id,
+        a.name,
+        a.status,
+        a.create_time
+        FROM
+        tbl_product_info as a,
+        tbl_product_identification as b
+        <where>
+            b.product_id = a.id
+            <if test="null != userId and userId != 0">
+                AND b.user_id = #{userId}
+            </if>
+        </where>
+        GROUP BY a.name
+        ORDER BY id DESC
+    </select>
+
+    <update id="editProduct" parameterType="com.tianzh.admin.business.analysis.model.Product">
+        UPDATE
+        tbl_product_info
+        SET
+        name =#{name,jdbcType=VARCHAR},
+        status=#{status,jdbcType=INTEGER},
+        update_time = NOW()
+        WHERE
+        id = #{id}
+    </update>
+
+    <delete id="deleteProduct" parameterType="com.tianzh.admin.business.analysis.model.Product">
+        DELETE
+        FROM
+        tbl_product_info
+        WHERE
+        id = #{id}
+    </delete>
+
+    <insert id="addProduct" parameterType="com.tianzh.admin.business.analysis.model.Product" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+             tbl_product_info(
+                name,
+                app_id,
+                status,
+                create_time
+                )
+           VALUES(
+             #{name,jdbcType=VARCHAR},
+             #{appId,jdbcType=VARCHAR},
+             #{status,jdbcType=INTEGER},
+             #{createTime}
+           )
+
+        <selectKey keyProperty="id" resultType="java.lang.Integer">
+
+            SELECT LAST_INSERT_ID() AS id
+
+        </selectKey>
+    </insert>
+
+
+
+</mapper>

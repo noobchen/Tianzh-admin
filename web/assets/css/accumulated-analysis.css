@@ -1,0 +1,68 @@
+.mod-header {
+    padding: 0px 23px;
+    background: transparent url(../img/backg.png) repeat-x scroll 0px -297px;
+    border: 1px solid #B4B4B4;
+    height: 43px;
+    line-height: 43px;
+    margin-bottom: -20px;
+}
+
+.radius {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.font-red {
+    color: red;
+}
+
+.font-yellow {
+    color: yellow;
+}
+
+.font-green {
+    color: green;
+}
+
+.compress-table {
+    table-layout: fixed;
+}
+
+.compress-td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.borders li {
+    height: 28px;
+    line-height: 28px;
+    font-size: 13px;
+    border-left: 1px solid #FFF;
+    display: inline-block;
+    padding: 0px 14px;
+    border-right: 1px solid #B4B4B4;
+    cursor: pointer;
+    background: transparent url("../img/backg2.png") repeat-x scroll 0px -120px;
+}
+
+.borders .on {
+    background: transparent url("../img/backg2.png") repeat-x scroll 0px 1px;
+}
+
+.borders {
+    height: 28px;
+    line-height: 28px;
+    border-radius: 8px;
+    display: inline-block;
+    border: 1px solid #B4B4B4;
+    font-size: 0px;
+}
+
+
+.mRadiusborder{
+    border: 1px solid #B4B4B4;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 100px
+}

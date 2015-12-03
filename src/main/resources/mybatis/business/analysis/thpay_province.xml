@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thpay_province">
+
+    <resultMap id="thpayProvince" type="com.tianzh.admin.business.analysis.model.ThPayProvince">
+        <id property="id" column="id"/>
+        <result property="thPayId" column="th_pay_id"/>
+        <result property="provinderId" column="provider_id"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="province" column="province"/>
+    </resultMap>
+
+    <select id="queryProvinces" parameterType="java.util.HashMap" resultMap="thpayProvince">
+        SELECT
+        id,
+        th_pay_id,
+        provider_id,
+        province_id,
+        province
+        FROM
+        tbl_th_pay_province
+        WHERE
+            th_pay_id = #{thPayId}
+            AND
+            provider_id = #{providerId}
+            AND
+            province_type = #{provinceType}
+        ORDER BY id DESC
+    </select>
+
+    <insert id="addProvinces" parameterType="java.util.List" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+        tbl_th_pay_province(
+        th_pay_id,
+        provider_id,
+        province_id,
+        province,
+        province_type,
+        create_time
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.thPayId,jdbcType=INTEGER},
+            #{item.provinderId,jdbcType=INTEGER},
+            #{item.provinceId,jdbcType=INTEGER},
+            #{item.province,jdbcType=VARCHAR},
+            #{item.provinceType,jdbcType=INTEGER},
+            #{item.createTime}
+            )
+        </foreach>
+
+    </insert>
+
+
+    <delete id="delProvinces" parameterType="com.tianzh.admin.business.analysis.model.ThPayProvince">
+        DELETE
+        FROM
+        tbl_th_pay_province
+        WHERE
+        th_pay_id=#{thPayId,jdbcType=INTEGER}
+        AND
+        provider_id=#{provinderId,jdbcType=INTEGER}
+        AND
+        province_type = #{provinceType,jdbcType=INTEGER}
+    </delete>
+
+
+</mapper>

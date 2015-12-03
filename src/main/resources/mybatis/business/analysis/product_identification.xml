@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="product_identification">
+
+    <resultMap id="product_identification" type="com.tianzh.admin.business.analysis.model.ProductIdentification">
+        <id property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="userId" column="user_id"/>
+        <result property="userCompanyName" column="user_company_name"/>
+        <result property="accountType" column="account_type"/>
+        <result property="prodIdentification" column="prod_identification"/>
+        <result property="cooperationType" column="cooperation_type"/>
+        <result property="chargeOffType" column="chargeOff_type"/>
+        <result property="discount" column="discount"/>
+        <result property="sharing" column="sharing"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+
+    <select id="queryProductIdentification" parameterType="java.util.HashMap" resultMap="product_identification">
+        SELECT
+        id,
+        product_id,
+        product_name,
+        user_id,
+        user_company_name,
+        account_type,
+        prod_identification,
+        cooperation_type,
+        chargeOff_type,
+        discount,
+        sharing,
+        status,
+        create_time,
+        update_time
+        FROM
+        tbl_product_identification
+        <where>
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prod_identification LIKE CONCAT(CONCAT('%', #{prodIdentification}),'%')
+            </if>
+
+            <if test="null != userId and userId != 0">
+                AND user_id = #{userId}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="queryProIdentiGroup" parameterType="java.util.HashMap" resultMap="product_identification">
+        SELECT
+        user_id,
+        user_company_name,
+        prod_identification
+        FROM
+        tbl_product_identification
+        <where>
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prod_identification = #{prodIdentification}
+            </if>
+
+            <if test="null != userId and userId != 0">
+                AND user_id = #{userId}
+            </if>
+        </where>
+        GROUP BY user_id,prod_identification
+        ORDER BY id DESC
+    </select>
+
+    <select id="queryAllProIdentiGroup" parameterType="java.util.HashMap" resultMap="product_identification">
+        SELECT
+            product_id,
+            product_name,
+            prod_identification
+        FROM
+            tbl_product_identification
+        WHERE
+            prod_identification != "-/-"
+        GROUP BY
+            product_id,
+            prod_identification
+
+    </select>
+
+    <update id="editProductIdentification" parameterType="com.tianzh.admin.business.analysis.model.ProductIdentification">
+        UPDATE
+        tbl_product_identification
+        SET
+        prod_identification =#{prodIdentification,jdbcType=VARCHAR},
+        discount =#{discount,jdbcType=DECIMAL},
+        sharing =#{sharing,jdbcType=DECIMAL},
+        cooperation_type =#{cooperationType,jdbcType=INTEGER},
+        chargeOff_type =#{chargeOffType,jdbcType=INTEGER},
+        update_time = NOW()
+        WHERE
+        id = #{id}
+    </update>
+
+    <delete id="delProductIdentification" parameterType="com.tianzh.admin.business.analysis.model.ProductIdentification">
+        DELETE
+        FROM
+        tbl_product_identification
+        WHERE
+        id = #{id}
+    </delete>
+
+    <insert id="addProductIdentification" parameterType="com.tianzh.admin.business.analysis.model.ProductIdentification" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+        tbl_product_identification(
+        product_id,
+        product_name,
+        user_id,
+        user_company_name,
+        account_type,
+        prod_identification,
+        cooperation_type,
+        chargeOff_type,
+        discount,
+        sharing,
+        status,
+        create_time
+        )
+        VALUES(
+        #{productId,jdbcType=INTEGER},
+        #{productName,jdbcType=VARCHAR},
+        #{userId,jdbcType=INTEGER},
+        #{userCompanyName,jdbcType=VARCHAR},
+        #{accountType,jdbcType=VARCHAR},
+        #{prodIdentification,jdbcType=VARCHAR},
+        #{cooperationType,jdbcType=INTEGER},
+        #{chargeOffType,jdbcType=INTEGER},
+        #{discount,jdbcType=DECIMAL},
+        #{sharing,jdbcType=DECIMAL},
+        #{status,jdbcType=INTEGER},
+        #{createTime}
+        )
+    </insert>
+
+
+</mapper>

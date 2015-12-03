@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <plugins>
+        <plugin interceptor="com.tianzh.admin.common.page.MysqlPagingPlugin"/>
+    </plugins>
+    <mappers>
+        <mapper resource="mybatis/permission/resource.xml"/>
+        <mapper resource="mybatis/permission/operator.xml"/>
+        <mapper resource="mybatis/permission/role.xml"/>
+
+
+        <mapper resource="mybatis/business/analysis/order.xml"/>
+        <mapper resource="mybatis/business/analysis/product.xml"/>
+        <mapper resource="mybatis/business/analysis/product_detial.xml"/>
+        <mapper resource="mybatis/business/analysis/product_analysis.xml"/>
+        <mapper resource="mybatis/business/analysis/product_identification.xml"/>
+        <mapper resource="mybatis/business/analysis/th_pay.xml"/>
+        <mapper resource="mybatis/business/analysis/thpay_province.xml"/>
+        <mapper resource="mybatis/business/analysis/user.xml"/>
+
+    </mappers>
+</configuration>

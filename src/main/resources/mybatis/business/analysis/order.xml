@@ -1,0 +1,734 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="order">
+    <resultMap id="order" type="com.tianzh.admin.business.analysis.model.Order">
+        <id property="id" column="id"/>
+        <result property="linkId" column="link_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="thirdPartyKey" column="third_party_key"/>
+        <result property="productName" column="product_name"/>
+        <result property="prodIdentification" column="prod_identification"/>
+        <result property="userId" column="user_id"/>
+        <result property="userCompany" column="user_company"/>
+        <result property="userToken" column="user_token"/>
+        <result property="amounts" column="amounts"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="thOrder" type="com.tianzh.admin.business.analysis.model.ThPayOrder">
+        <id property="id" column="id"/>
+        <result property="appName" column="app_name"/>
+        <result property="channelId" column="channel_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productPrice" column="product_price"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="providerId" column="provider_id"/>
+        <result property="model" column="model"/>
+        <result property="thpayName" column="thpay_name"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="statusDesc" column="status_desc"/>
+        <result property="createTime" column="create_time"/>
+        <result property="userToken" column="user_token"/>
+        <result property="tokenRegTime" column="tokenRegTime"/>
+    </resultMap>
+
+    <resultMap id="analysis" type="com.tianzh.admin.business.analysis.model.ProductAnalysis">
+        <id property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="prodIdentification" column="prod_identification"/>
+        <result property="userId" column="user_id"/>
+        <result property="userCompany" column="user_company"/>
+        <result property="orderAmounts" column="order_amounts"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="basicAnalysis" type="com.tianzh.admin.business.analysis.model.BasicProAnalysis">
+        <result property="appId" column="product_id"/>
+        <result property="appName" column="product_name"/>
+        <result property="amounts" column="newAmounts"/>
+        <result property="totalAmounts" column="totalAmounts"/>
+    </resultMap>
+
+    <resultMap id="sdkBasicAnalysis" type="com.tianzh.admin.business.analysis.model.SdkBasicAnalysis">
+        <result property="productKey" column="productId"/>
+        <result property="productName" column="productName"/>
+        <result property="productKey" column="app_id"/>
+        <result property="productName" column="app_name"/>
+        <result property="prodIdentification" column="channel_id"/>
+        <result property="userId" column="userId"/>
+        <result property="userCompany" column="userCompany"/>
+        <result property="newUsers" column="newUsers"/>
+        <result property="orderUsers" column="orderUsers"/>
+        <result property="orderAmounts" column="orderAmounts"/>
+        <result property="sucessAmounts" column="sucessAmounts"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
+
+    <resultMap id="sdkProvinceAnalysis" type="com.tianzh.admin.business.analysis.model.SdkProvinceAnalysis">
+        <result property="productKey" column="productKey"/>
+        <result property="productName" column="productName"/>
+        <result property="productKey" column="app_id"/>
+        <result property="productName" column="app_name"/>
+        <result property="prodIdentification" column="channel_id"/>
+        <result property="userId" column="userId"/>
+        <result property="userCompany" column="userCompany"/>
+        <result property="providerId" column="providerId"/>
+        <result property="providerId" column="provider_id"/>
+        <result property="providerName" column="providerName"/>
+        <result property="payId" column="payId"/>
+        <result property="payName" column="payName"/>
+        <result property="orderAmounts" column="orderAmounts"/>
+        <result property="sucessAmounts" column="sucessAmounts"/>
+        <result property="provinceId" column="provinceId"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="provinceName" column="province"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
+
+
+    <select id="queryOrders" parameterType="java.util.HashMap" resultMap="order">
+        SELECT
+        id,
+        link_id,
+        product_id,
+        third_party_key,
+        product_name,
+        prod_identification,
+        user_id,
+        user_company,
+        user_token,
+        amounts,
+        status,
+        create_time,
+        update_time
+        FROM
+        tbl_order_info
+        <where>
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prod_identification LIKE CONCAT(CONCAT('%', #{prodIdentification}),'%')
+            </if>
+
+            <if test="null != userId and userId != 0">
+                AND user_id = #{userId}
+            </if>
+
+            <if test="null != status and status != 999">
+                AND status = #{status}
+            </if>
+
+            <if test="null != startDate and startDate!='' and null != endDate and endDate !=''">
+                AND create_time &gt;= date_format(#{startDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+            </if>
+
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="findThOrder" parameterType="java.lang.Integer" resultMap="thOrder">
+        SELECT
+            a.channel_id,
+            a.user_token,
+            b.create_time as tokenRegTime,
+            a.create_time
+        FROM
+            tbl_charge_order_info as a,
+            tbl_useful_user as b
+        WHERE
+            a.id = #{id}
+            AND
+            a.user_token = b.user_token
+
+
+    </select>
+
+    <select id="queryThOrders" parameterType="java.util.HashMap" resultMap="thOrder">
+        SELECT
+        *
+        FROM
+        tbl_charge_order_info
+        <where>
+            <if test="null != appId and appId != ''">
+                AND app_id = #{appId}
+            </if>
+
+            <if test="null != channelId and channelId != ''">
+                AND channel_id = #{channelId}
+            </if>
+
+            <if test="null != productId and productId != ''">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != payId ">
+                AND thpay_type = #{payId}
+            </if>
+
+            <if test="null != provinceId ">
+                AND province_id = #{provinceId}
+            </if>
+
+            <if test="null != statusCode ">
+                AND order_status = #{statusCode}
+            </if>
+
+            <if test="null != startDate and startDate!='' and null != endDate and endDate !=''">
+                AND create_time &gt;= date_format(#{startDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+            </if>
+
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="queryProAnalyByProduct" parameterType="java.util.HashMap" resultMap="basicAnalysis">
+        SELECT
+        product_id,
+        product_name,
+        sum(amounts/100) AS totalAmounts,
+        sum(amounts/100) AS newAmounts
+        FROM
+        tbl_order_info
+        <where>
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != startDate and startDate!='' and null != endDate and endDate !=''">
+                AND create_time &gt;= date_format(#{startDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+            </if>
+
+        </where>
+        GROUP BY product_id
+        ORDER BY totalAmounts DESC
+    </select>
+
+    <select id="analysisOrders" parameterType="java.util.HashMap" resultMap="analysis">
+        SELECT
+        product_id,
+        product_name,
+        prod_identification,
+        user_id,
+        user_company,
+        SUM(amounts/100) as order_amounts,
+        create_time
+        FROM
+        tbl_order_info
+        <where>
+            status = 0
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prod_identification = #{prodIdentification}
+            </if>
+
+            <if test="null != userId and userId != 0">
+                AND user_id = #{userId}
+            </if>
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        GROUP BY
+        user_id,product_id,prod_identification
+    </select>
+
+    <select id="analysisCpOrders" parameterType="java.util.HashMap" resultMap="analysis">
+        SELECT
+        product_id,
+        product_name,
+        SUM(amounts/100) as order_amounts,
+        create_time
+        FROM
+        tbl_order_info
+        <where>
+            status = 0
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+    </select>
+
+    <select id="queryNewAmounts" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT
+        SUM(amounts/100) as new_amounts
+        FROM
+        tbl_order_info
+        <where>
+            status = 0
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prod_identification = #{prodIdentification}
+            </if>
+
+            <if test="null != userId and userId != 0">
+                AND user_id = #{userId}
+            </if>
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND register_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND register_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+                AND create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+    </select>
+
+    <insert id="addOrder" parameterType="com.tianzh.admin.business.analysis.model.Order" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+             tbl_order_info(
+                charge_order_id,
+                link_id,
+                product_id,
+                pay_type,
+                third_party_key,
+                product_name,
+                prod_identification,
+                user_id,
+                user_company,
+                user_token,
+                amounts,
+                status,
+                register_time,
+                create_time
+             )
+           VALUES(
+             #{chargeOrderId,jdbcType=INTEGER},
+             #{linkId,jdbcType=VARCHAR},
+             #{productId,jdbcType=INTEGER},
+             #{payType,jdbcType=VARCHAR},
+             #{thirdPartyKey,jdbcType=VARCHAR},
+             #{productName,jdbcType=VARCHAR},
+             #{prodIdentification,jdbcType=VARCHAR},
+             #{userId,jdbcType=INTEGER},
+             #{userCompany,jdbcType=VARCHAR},
+             #{userToken,jdbcType=VARCHAR},
+             #{amounts,jdbcType=INTEGER},
+             #{status,jdbcType=INTEGER},
+             #{registerTime},
+             #{createTime}
+           )
+    </insert>
+
+    <update id="updateOrder" parameterType="com.tianzh.admin.business.analysis.model.Order">
+        UPDATE
+        tbl_product_analysis
+        SET
+        order_amounts = #{amounts}
+        WHERE
+        prod_identification = #{prodIdentification}
+        AND
+        product_id = #{productId}
+        AND
+        create_time = date_format(#{syncDate},'%Y-%m-%d')
+
+    </update>
+
+    <update id="updateCpOrder" parameterType="com.tianzh.admin.business.analysis.model.Order">
+        UPDATE
+        tbl_product_analysis
+        SET
+        order_amounts = order_amounts + #{amounts}
+        WHERE
+        prod_identification = '-/-'
+        AND
+        product_id = #{productId}
+        AND
+        create_time = date_format(#{syncDate},'%Y-%m-%d')
+
+    </update>
+
+    <update id="updateChargeOrder" parameterType="java.util.HashMap">
+        UPDATE
+        tbl_charge_order_info
+        SET
+        sucess_price = sucess_price + #{amounts},
+        order_status = 0
+        WHERE
+        id=#{id}
+    </update>
+
+    <select id="analysisBasicChargeOrders" parameterType="java.util.HashMap" resultMap="sdkBasicAnalysis">
+        SELECT
+        app_id,
+        app_name,
+        channel_id,
+        count(DISTINCT user_token) as orderUsers,
+        sum(product_price/100) as orderAmounts,
+        sum(sucess_price/100) as sucessAmounts,
+        date_format(create_time,'%Y-%m-%d') as createTime
+        FROM
+        tbl_charge_order_info
+        <where>
+            <if test="null != productId and productId != ''">
+                AND app_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND channel_id = #{prodIdentification}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        GROUP BY app_id,channel_id
+    </select>
+
+    <select id="queryBasicChargeAnalysises" parameterType="java.util.HashMap" resultMap="sdkBasicAnalysis">
+        SELECT
+        id,
+        productKey,
+        productName,
+        prodIdentification,
+        userId,
+        userCompany,
+        newUsers,
+        orderUsers,
+        orderAmounts,
+        sucessAmounts,
+        date_format(createTime,'%Y-%m-%d') as createTime
+        FROM
+        tbl_sdk_basic_analysis
+        <where>
+            <if test="null != productId and productId != ''">
+                AND productKey = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prodIdentification = #{prodIdentification}
+            </if>
+
+            <if test="null != userId and userId != ''">
+                AND userId = #{userId}
+            </if>
+
+            <if test="null != startDate and startDate!='' ">
+                AND createTime &gt;= date_format(#{startDate},'%Y-%m-%d')
+                AND createTime &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        GROUP BY createTime
+    </select>
+
+    <select id="analysisBasicSdk" parameterType="java.util.HashMap" resultMap="sdkProvinceAnalysis">
+        SELECT
+        app_id,
+        app_name,
+        channel_id,
+        thpay_type as payId,
+        thpay_name as payName,
+        sum(product_price/100) as orderAmounts,
+        sum(sucess_price/100) as sucessAmounts,
+        date_format(create_time,'%Y-%m-%d') as createTime
+        FROM
+        tbl_charge_order_info
+        <where>
+            <if test="null != productId and productId != ''">
+                AND app_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND channel_id = #{prodIdentification}
+            </if>
+
+            <if test="null != payId and payId != ''">
+                AND thpay_type = #{payId}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        GROUP BY app_id,channel_id,payId
+    </select>
+
+    <select id="analysisDetialSdk" parameterType="java.util.HashMap" resultMap="sdkProvinceAnalysis">
+        SELECT
+        app_id,
+        app_name,
+        channel_id,
+        thpay_type as payId,
+        thpay_name as payName,
+        provider_id,
+        province_id,
+        province,
+        city_id,
+        city,
+        sum(product_price/100) as orderAmounts,
+        sum(sucess_price/100) as sucessAmounts,
+        date_format(create_time,'%Y-%m-%d') as createTime
+        FROM
+        tbl_charge_order_info
+        <where>
+            <if test="null != productId and productId != ''">
+                AND app_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND channel_id = #{prodIdentification}
+            </if>
+
+            <if test="null != payId and payId != ''">
+                AND thpay_type = #{payId}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!=''">
+                AND create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        GROUP BY app_id,channel_id,payId,provider_id,province_id
+    </select>
+
+    <select id="analysisBasicProvinceAnalysis" parameterType="java.util.HashMap" resultMap="sdkProvinceAnalysis">
+        SELECT
+        provider_id,
+        province_id,
+        province,
+        sum(product_price/100) as orderAmounts,
+        sum(sucess_price/100) as sucessAmounts
+        FROM
+        tbl_charge_order_info
+        <where>
+            <if test="null != productId and productId != ''">
+                AND app_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND channel_id = #{prodIdentification}
+            </if>
+
+            <if test="null != payId and payId != ''">
+                AND thpay_type = #{payId}
+            </if>
+
+            <if test="null != providerId">
+                AND provider_id = #{providerId}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!=''">
+                AND create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        GROUP BY province_id
+        ORDER BY orderAmounts DESC
+
+    </select>
+
+    <select id="queryBasicProvinceAnalysis" parameterType="java.util.HashMap" resultMap="sdkProvinceAnalysis">
+        SELECT
+        providerId,
+        provinceId,
+        provinceName,
+        SUM(orderAmounts) as orderAmounts,
+        SUM(sucessAmounts) as sucessAmounts
+        FROM
+        tbl_sdk_province_analysis
+        <where>
+            <if test="null != productId and productId != ''">
+                AND productKey = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prodIdentification = #{prodIdentification}
+            </if>
+
+            <if test="null != payId and payId != ''">
+                AND payId = #{payId}
+            </if>
+
+            <if test="null != providerId">
+                AND providerId = #{providerId}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND createTime &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND createTime &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        GROUP BY provinceId
+        ORDER BY orderAmounts DESC
+    </select>
+
+    <select id="queryBasicSdkAnalysises" parameterType="java.util.HashMap" resultMap="sdkProvinceAnalysis">
+        SELECT
+        payId,
+        payName,
+        SUM(orderAmounts) as orderAmounts,
+        SUM(sucessAmounts) as sucessAmounts
+        FROM
+        tbl_sdk_province_analysis
+        <where>
+            <if test="null != productId and productId != ''">
+                AND productKey = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prodIdentification = #{prodIdentification}
+            </if>
+
+            <if test="null != payId and payId != ''">
+                AND payId = #{payId}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND createTime &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND createTime &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+        GROUP BY payId
+    </select>
+
+    <insert id="addSdkBasicAnalysises" parameterType="java.util.List"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+        tbl_sdk_basic_analysis(
+        productKey,
+        productName,
+        prodIdentification,
+        userId,
+        userCompany,
+        newUsers,
+        orderUsers,
+        orderAmounts,
+        sucessAmounts,
+        createTime
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.productKey,jdbcType=INTEGER},
+            #{item.productName,jdbcType=VARCHAR},
+            #{item.prodIdentification,jdbcType=VARCHAR},
+            #{item.userId,jdbcType=INTEGER},
+            #{item.userCompany,jdbcType=VARCHAR},
+            #{item.newUsers,jdbcType=INTEGER},
+            #{item.orderUsers,jdbcType=INTEGER},
+            #{item.orderAmounts,jdbcType=INTEGER},
+            #{item.sucessAmounts,jdbcType=INTEGER},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="addSdkProvinceAnalysises" parameterType="java.util.List"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+        tbl_sdk_province_analysis(
+        productKey,
+        productName,
+        prodIdentification,
+        userId,
+        userCompany,
+        providerId,
+        providerName,
+        payId,
+        payName,
+        orderAmounts,
+        sucessAmounts,
+        provinceId,
+        provinceName,
+        createTime
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.productKey,jdbcType=VARCHAR},
+            #{item.productName,jdbcType=VARCHAR},
+            #{item.prodIdentification,jdbcType=VARCHAR},
+            #{item.userId,jdbcType=INTEGER},
+            #{item.userCompany,jdbcType=VARCHAR},
+            #{item.providerId,jdbcType=INTEGER},
+            #{item.providerName,jdbcType=VARCHAR},
+            #{item.payId,jdbcType=INTEGER},
+            #{item.payName,jdbcType=VARCHAR},
+            #{item.orderAmounts,jdbcType=INTEGER},
+            #{item.sucessAmounts,jdbcType=INTEGER},
+            #{item.provinceId,jdbcType=INTEGER},
+            #{item.provinceName,jdbcType=VARCHAR},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="queryBasicSucessAmounts" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT
+        sum(a.amounts/100) as sucessAmounts
+        FROM
+        tbl_order_info as a,
+        tbl_charge_order_info as b
+        <where>
+            a.charge_order_id = b.id
+            AND
+            a.status = 0
+            <if test="null != productId and productId != ''">
+                AND b.product_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND b.channel_id = #{prodIdentification}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND b.create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND b.create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+        </where>
+    </select>
+
+    <select id="queryBasicSdkSucessAmounts" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT
+        sum(a.amounts/100) as sucessAmounts
+        FROM
+        tbl_order_info as a,
+        tbl_charge_order_info as b
+        <where>
+            a.charge_order_id = b.id
+            AND
+            a.status = 0
+            <if test="null != productId and productId != ''">
+                AND b.product_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND b.channel_id = #{prodIdentification}
+            </if>
+
+            <if test="null != specifiedDate and specifiedDate!='' ">
+                AND b.create_time &gt;= date_format(#{specifiedDate},'%Y-%m-%d')
+                AND b.create_time &lt; DATE_ADD(#{specifiedDate}, INTERVAL 1 DAY)
+            </if>
+
+            <if test="null != payId and payId!='' ">
+                AND b.thpay_type = #{payId}
+            </if>
+        </where>
+    </select>
+</mapper>

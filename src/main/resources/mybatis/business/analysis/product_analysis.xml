@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="product_analysis">
+    <resultMap id="analysis" type="com.tianzh.admin.business.analysis.model.ProductAnalysis">
+        <id property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="prodIdentification" column="prod_identification"/>
+        <result property="userId" column="user_id"/>
+        <result property="userCompany" column="user_company"/>
+        <result property="cooperationType" column="cooperation_type"/>
+        <result property="chargeOffType" column="chargeoff_type"/>
+        <result property="newUsers" column="new_users"/>
+        <result property="usefullUsers" column="usefull_users"/>
+        <result property="activeUsers" column="active_users"/>
+        <result property="orderAmounts" column="order_amounts"/>
+        <result property="newAmounts" column="new_amounts"/>
+        <result property="amountsDiscount" column="amounts_discount"/>
+        <result property="usersDiscount" column="users_discount"/>
+        <result property="chargeOffStatus" column="charge_off_status"/>
+        <result property="showNewUsers" column="show_new_users"/>
+        <result property="showOrderAmounts" column="show_order_amounts"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="basicAnalysis" type="com.tianzh.admin.business.analysis.model.BasicProAnalysis">
+        <result property="appId" column="product_id"/>
+        <result property="appName" column="product_name"/>
+        <result property="totalNewUsers" column="totalNewUsers"/>
+        <result property="totalAmounts" column="totalAmounts"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
+
+    <select id="queryProductAnalysis" parameterType="java.util.HashMap" resultMap="analysis">
+        SELECT
+        *
+        FROM
+        tbl_product_analysis2
+        <where>
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != prodIdentification and prodIdentification != ''">
+                AND prod_identification = #{prodIdentification}
+            </if>
+
+            <if test="null != userId and userId != 0">
+                AND user_id = #{userId}
+            </if>
+
+            <if test="null != offStatus">
+                AND charge_off_status = #{offStatus}
+            </if>
+            <if test="null != startDate and startDate!='' and null != endDate and endDate !=''">
+                AND create_time &gt;= date_format(#{startDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+            </if>
+
+        </where>
+        ORDER BY date_format(create_time,'%Y-%m-%d') DESC,new_users DESC
+
+    </select>
+
+
+    <select id="queryProAnalyByProduct" parameterType="java.util.HashMap" resultMap="basicAnalysis">
+        SELECT
+        product_id,
+        product_name,
+        sum(new_users) AS totalNewUsers,
+        sum(order_amounts) AS totalAmounts
+        FROM
+        tbl_product_analysis2
+        <where>
+            prod_identification != '-/-'
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != startDate and startDate!='' and null != endDate and endDate !=''">
+                AND create_time &gt;= date_format(#{startDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+            </if>
+
+        </where>
+        GROUP BY product_id
+        ORDER BY totalAmounts DESC
+    </select>
+
+    <select id="queryProAnalyByDay" parameterType="java.util.HashMap" resultMap="basicAnalysis">
+        SELECT
+        product_id,
+        product_name,
+        sum(new_users) AS totalNewUsers,
+        sum(order_amounts) AS totalAmounts,
+        DATE_FORMAT(create_time,'%Y-%m-%d') AS createTime
+        FROM
+        tbl_product_analysis2
+        <where>
+            prod_identification != '-/-'
+            <if test="null != productId and productId != 0">
+                AND product_id = #{productId}
+            </if>
+
+            <if test="null != startDate and startDate!='' and null != endDate and endDate !=''">
+                AND create_time &gt;= date_format(#{startDate},'%Y-%m-%d')
+                AND create_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+            </if>
+
+        </where>
+        GROUP BY createTime
+        ORDER BY createTime ASC
+    </select>
+
+    <select id="findSdkProvinceAnalysisId" parameterType="com.tianzh.admin.business.analysis.model.SdkProvinceAnalysis" resultType="java.lang.Integer">
+        SELECT
+        id
+        FROM
+        tbl_sdk_province_analysis
+        <where>
+            prodIdentification = #{prodIdentification}
+            AND
+            productKey = #{productKey}
+            AND
+            date_format(createTime,'%Y-%m-%d') = #{syncDate}
+            AND
+            payId = #{payId}
+            AND
+            providerId = #{providerId}
+        </where>
+        LIMIT 1
+    </select>
+
+    <insert id="addProductAnalysis" parameterType="java.util.List"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+        tbl_product_analysis(
+        product_id,
+        product_name,
+        prod_identification,
+        user_id,
+        user_company,
+        cooperation_type,
+        chargeoff_type,
+        new_users,
+        order_users,
+        order_amounts,
+        n_users_Rp,
+        o_users_Rp,
+        order_times,
+        order_ratio,
+        discount,
+        sharing,
+        show_new_users,
+        show_order_amounts,
+        charge_off_status,
+        create_time
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.productId,jdbcType=INTEGER},
+            #{item.productName,jdbcType=VARCHAR},
+            #{item.prodIdentification,jdbcType=VARCHAR},
+            #{item.userId,jdbcType=INTEGER},
+            #{item.userCompany,jdbcType=VARCHAR},
+            #{item.cooperationType,jdbcType=INTEGER},
+            #{item.chargeOffType,jdbcType=INTEGER},
+            #{item.newUsers,jdbcType=INTEGER},
+            #{item.orderUsers,jdbcType=INTEGER},
+            #{item.orderAmounts,jdbcType=INTEGER},
+            #{item.nUsersRp,jdbcType=DECIMAL},
+            #{item.oUsersRp,jdbcType=DECIMAL},
+            #{item.orderTimes,jdbcType=INTEGER},
+            #{item.orderRatio,jdbcType=DECIMAL},
+            #{item.discount,jdbcType=DECIMAL},
+            #{item.sharing,jdbcType=DECIMAL},
+            #{item.showNewUsers,jdbcType=INTEGER},
+            #{item.showOrderAmounts,jdbcType=INTEGER},
+            #{item.chargeOffStatus,jdbcType=INTEGER},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="addProductAnalysis2" parameterType="java.util.List"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO
+        tbl_product_analysis2(
+        product_id,
+        product_name,
+        prod_identification,
+        user_id,
+        user_company,
+        cooperation_type,
+        chargeoff_type,
+        new_users,
+        usefull_users,
+        active_users,
+        order_amounts,
+        new_amounts,
+        amounts_discount,
+        users_discount,
+        sharing,
+        charge_off_status,
+        show_new_users,
+        show_order_amounts,
+        create_time
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.productId,jdbcType=INTEGER},
+            #{item.productName,jdbcType=VARCHAR},
+            #{item.prodIdentification,jdbcType=VARCHAR},
+            #{item.userId,jdbcType=INTEGER},
+            #{item.userCompany,jdbcType=VARCHAR},
+            #{item.cooperationType,jdbcType=INTEGER},
+            #{item.chargeOffType,jdbcType=INTEGER},
+            #{item.newUsers,jdbcType=INTEGER},
+            #{item.usefullUsers,jdbcType=INTEGER},
+            #{item.activeUsers,jdbcType=INTEGER},
+            #{item.orderAmounts,jdbcType=INTEGER},
+            #{item.newAmounts,jdbcType=INTEGER},
+            #{item.amountsDiscount,jdbcType=DECIMAL},
+            #{item.usersDiscount,jdbcType=DECIMAL},
+            #{item.sharing,jdbcType=DECIMAL},
+            #{item.chargeOffStatus,jdbcType=INTEGER},
+            #{item.showNewUsers,jdbcType=INTEGER},
+            #{item.showOrderAmounts,jdbcType=INTEGER},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
+
+
+    <update id="editProductAnalysis" parameterType="com.tianzh.admin.business.analysis.model.ProductAnalysis">
+        UPDATE
+        tbl_product_analysis2
+        SET
+        new_users=#{newUsers,jdbcType=INTEGER},
+        users_discount=#{usersDiscount,jdbcType=DECIMAL},
+        amounts_discount=#{amountsDiscount,jdbcType=DECIMAL},
+        show_new_users=#{showNewUsers,jdbcType=INTEGER},
+        show_order_amounts=#{showOrderAmounts,jdbcType=INTEGER},
+        charge_off_status=1,
+        update_time = NOW()
+        WHERE
+        id = #{id}
+    </update>
+
+    <delete id="delProductAnalysis" parameterType="com.tianzh.admin.business.analysis.model.ProductAnalysis">
+        DELETE
+        FROM
+        tbl_product_analysis2
+        WHERE
+        id = #{id}
+    </delete>
+
+    <update id="updateProductAnalysisAmount" parameterType="com.tianzh.admin.business.analysis.model.ProductAnalysis">
+        UPDATE
+        tbl_product_analysis2
+        SET
+        order_amounts = order_amounts + #{orderAmounts}
+        WHERE
+        prod_identification = #{prodIdentification}
+        AND
+        product_id = #{productId}
+        AND
+        date_format(create_time,'%Y-%m-%d') = #{syncDate}
+    </update>
+
+    <update id="updateSdkBasicAnalysis" parameterType="com.tianzh.admin.business.analysis.model.SdkBasicAnalysis">
+        UPDATE
+        tbl_sdk_basic_analysis
+        SET
+        sucessAmounts = sucessAmounts + #{sucessAmounts}
+        WHERE
+        prodIdentification = #{prodIdentification}
+        AND
+        productKey = #{productKey}
+        AND
+        date_format(createTime,'%Y-%m-%d') = #{syncDate}
+    </update>
+
+    <update id="updateSdkProvinceAnalysis" parameterType="com.tianzh.admin.business.analysis.model.SdkProvinceAnalysis">
+        UPDATE
+        tbl_sdk_province_analysis
+        SET
+        sucessAmounts = sucessAmounts + #{sucessAmounts}
+        WHERE
+        id = #{id}
+    </update>
+</mapper>
